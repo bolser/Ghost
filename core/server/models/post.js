@@ -13,6 +13,7 @@ var _              = require('lodash'),
     baseUtils      = require('./base/utils'),
     i18n           = require('../i18n'),
     toString       = require('lodash.tostring'),
+    date           = require('date-and-time'),
     Post,
     Posts;
 
@@ -445,6 +446,10 @@ Post = ghostBookshelf.Model.extend({
             options.where.statements.push({prop: 'status', op: 'IN', value: ['published', 'draft']});
             delete options.status;
         }
+
+        // Filter by published_date in the past
+        var now = new Date();
+        options.where.statements.push({prop: 'published_at', op: '<', value: date.format(now, 'YYYY-MM-DD HH:mm:ss')});
 
         return options;
     },
