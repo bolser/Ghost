@@ -539,14 +539,18 @@ Post = ghostBookshelf.Model.extend({
         return ghostBookshelf.Model.findOne.call(this, data, options).then(function then(post) {
             if ((withNext || withPrev) && post && !post.page) {
                 var publishedAt = post.get('published_at'),
+                    currentDateTime = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
                     prev,
                     next;
+
+
 
                 if (withNext) {
                     next = Post.forge().query(function queryBuilder(qb) {
                         qb.where('status', '=', 'published')
                             .andWhere('page', '=', 0)
                             .andWhere('published_at', '>', publishedAt)
+                            .andWhere('published_at', '<', currentDateTime)
                             .orderBy('published_at', 'asc')
                             .limit(1);
                     }).fetch({withRelated: nextRelations});
@@ -557,6 +561,7 @@ Post = ghostBookshelf.Model.extend({
                         qb.where('status', '=', 'published')
                             .andWhere('page', '=', 0)
                             .andWhere('published_at', '<', publishedAt)
+                            .andWhere('published_at', '<', currentDateTime)
                             .orderBy('published_at', 'desc')
                             .limit(1);
                     }).fetch({withRelated: prevRelations});
